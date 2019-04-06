@@ -1,0 +1,25 @@
+﻿  libpcapi.cpp
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(93): warning C4101: “dev_mask”: 未引用的局部变量
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(93): warning C4101: “dev_ip”: 未引用的局部变量
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(92): warning C4101: “addr”: 未引用的局部变量
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(141): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(136): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\time.h(506): note: 参见“localtime”的声明
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(235): warning C4996: 'gmtime': This function or variable may be unsafe. Consider using gmtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\time.h(496): note: 参见“gmtime”的声明
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(240): warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _open. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\corecrt_io.h(516): note: 参见“open”的声明
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(241): warning C4996: 'write': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _write. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\corecrt_io.h(558): note: 参见“write”的声明
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(242): warning C4996: 'close': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _close. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\corecrt_io.h(459): note: 参见“close”的声明
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(267): warning C4129: “D”: 不可识别的字符转义序列
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(267): warning C4129: “N”: 不可识别的字符转义序列
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(264): warning C4101: “tmp_ip”: 未引用的局部变量
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(298): warning C4129: “D”: 不可识别的字符转义序列
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(298): warning C4129: “N”: 不可识别的字符转义序列
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(301): warning C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(182): note: 参见“strerror”的声明
+c:\users\blean\documents\visual studio 2017\projects\net-lab-analyzer\net-lab-analyzer\libpcapi.cpp(388): warning C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(182): note: 参见“strerror”的声明
+  net-lab-analyzer.vcxproj -> C:\Users\Blean\documents\visual studio 2017\Projects\net-lab-analyzer\Debug\net-lab-analyzer.exe
