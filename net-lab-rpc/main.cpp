@@ -20,6 +20,11 @@ void lsh_loop(void) {
     // 执行命令
     status = lsh_execute(args);
 
+    if (NULL != out_put) {
+      printf("%s", out_put);
+      out_put = NULL;
+    }
+
     free(line);
     free(args);
     

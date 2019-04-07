@@ -1,5 +1,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +9,10 @@
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
+
+#define OUT_PUT_BUFSIZE 65535
+// 执行命令后的输出缓冲区
+extern char* out_put;
 
 void lsh_loop(void);
 char *lsh_read_line(void);
