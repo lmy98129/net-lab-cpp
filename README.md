@@ -2,8 +2,8 @@
 Computer network curriculum projects (analyzer &amp; rpc) based on cpp
 
 ## Requires
-* net-lab-analyzer requires: Windows (version 10), Visual Studio 2017, WinPcap 4.1.3, MinGW (installed in C:/MinGW/), WinPcap 4.1.2 Developer's Pack (installed in C:/WpdPack/), etc.
-* net-lab-rpc requires Unix (macOS/Linux), clang.
+* net-lab-analyzer requires: Windows 10, Visual Studio 2017, WinPcap 4.1.3, MinGW (installed in C:/MinGW/), WinPcap 4.1.2 Developer's Pack (installed in C:/WpdPack/), etc.
+* net-lab-rpc requires: Unix (macOS/Linux), clang.
 
 ## Usage
 * net-lab-analyzer: open this project in VS2017 or complie it into *.exe by VS and run.
@@ -17,4 +17,6 @@ Computer network curriculum projects (analyzer &amp; rpc) based on cpp
 
 ### 2. net-lab-rpc
 - [x] a simple shell based on C++ with built-in commands like cd, exit, etc.
-- [ ] devide the shell into server and client based on socket.
+- [x] devide the shell into server and client based on socket.
+- [x] 1-n client/server structure.
+- [ ] test the project on real server.
