@@ -34,8 +34,8 @@ int main(int argc, const char *argv[]) {
   // IPv4地址族
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(SERVER_PORT);
-  server_addr.sin_addr.s_addr = INADDR_ANY;
-  // server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  // server_addr.sin_addr.s_addr = INADDR_ANY;
+  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
   // sin_zero是为了让sockaddr与sockaddr_in两个数据结构保持大小相同而保留的空字节
   bzero(&(server_addr.sin_zero), 8);
 
@@ -45,6 +45,10 @@ int main(int argc, const char *argv[]) {
     perror("\r错误: 创建socket出错");
     return 1;
   }
+
+  // 设置端口复用
+  bool reuse_addr = true;
+  setsockopt(server_sock_fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&reuse_addr, sizeof(bool));
 
   //绑定socket
   int bind_result = bind(server_sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
@@ -122,7 +126,9 @@ int main(int argc, const char *argv[]) {
         // 输入“.exit"则退出服务器
         if (strncmp(input_msg, QUIT_CMD, strlen(QUIT_CMD)) == 0) {
           printf("\r提示: 退出服务器\n");
-          exit(0);
+          // 释放当前的socket资源
+          shutdown(server_sock_fd, SHUT_RDWR);
+          exit(EXIT_SUCCESS);
         }
 
         // 注意：这是对所有已连接的客户端进行群发操作

@@ -26,8 +26,8 @@ int main(int argc, const char *argv[]) {
   // IPv4地址族
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(SERVER_PORT);
-  server_addr.sin_addr.s_addr = inet_addr("198.181.38.49");
-  // server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  // server_addr.sin_addr.s_addr = inet_addr("198.181.38.49");
+  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
   // sin_zero是为了让sockaddr与sockaddr_in两个数据结构保持大小相同而保留的空字节
   bzero(&(server_addr.sin_zero), 8);
 

@@ -24,4 +24,4 @@ Computer network curriculum projects (analyzer &amp; rpc) based on cpp
 - [x] devide the shell into server and client based on socket.
 - [x] 1-n server/client structure.
 - [x] test the project on real server.
-- [ ] Chinese out-put.
+- [x] Chinese out-put.

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iconv.h>
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
@@ -30,3 +31,5 @@ int lsh_exit(char **);
 
 extern int (*builtin_func[]) (char **);
 extern const char *builtin_str[];
+
+size_t get_utf8_length(unsigned char byte);

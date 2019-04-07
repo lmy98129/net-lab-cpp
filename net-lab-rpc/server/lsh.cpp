@@ -159,10 +159,24 @@ int lsh_launch(char **args) {
     close(std_out_pipe[PIPE_WRITE]);
     
     char result;
+    char chinese[4];
     // 毕竟不知道究竟输出了多少，只好逐个字符读取
     while(read(std_out_pipe[PIPE_READ], &result, 1) == 1) {
-      sprintf(out_put + strlen(out_put), "%s", &result);
-      position++;
+
+      if (get_utf8_length(result) == 3) {
+        // 遇到中文时直接连取三个，因为中文在utf-8中是三个字节的
+        chinese[0] = result;
+        read(std_out_pipe[PIPE_READ], &result, 1);
+        chinese[1] = result;
+        read(std_out_pipe[PIPE_READ], &result, 1);
+        chinese[2] = result;
+        chinese[3] = '\0';
+        position += 3;
+        sprintf(out_put + strlen(out_put), "%s", chinese);
+      } else {
+        sprintf(out_put + strlen(out_put), "%s", &result);
+        position++;
+      }
 
       if (position >= bufsize) {
         bufsize += OUT_PUT_BUFSIZE;
@@ -256,3 +270,20 @@ int lsh_help(char **args) {
 // int lsh_exit(char **args) {
 //   return 0;
 // }
+
+size_t get_utf8_length(unsigned char byte) {
+    size_t length = 0;
+    if (byte >= 0xFC) // lenght 6
+      length = 6;  
+    else if (byte >= 0xF8)
+      length = 5;
+    else if (byte >= 0xF0)
+      length = 4;
+    else if (byte >= 0xE0)
+      length = 3;
+    else if (byte >= 0xC0)
+      length = 2;
+    else
+      length = 1;
+    return length;
+  }     
