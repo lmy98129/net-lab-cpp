@@ -1,17 +1,41 @@
 {
   "version": "2.0.0",
-  "command": "make",
-  "args": [],
-  "problemMatcher": {
-      "owner": "cpp",
-      "fileLocation": ["relative", "${workspaceRoot}"],
-      "pattern": {
-          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-          "file": 1,
-          "line": 2,
-          "column": 3,
-          "severity": 4,
-          "message": 5
-      }
-  },
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "server",
+      "command": "make",
+      "args": ["-f", "server/makefile"],
+      "problemMatcher": {
+          "owner": "cpp",
+          "fileLocation": ["relative", "${workspaceRoot}/server/"],
+          "pattern": {
+              "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+              "file": 1,
+              "line": 2,
+              "column": 3,
+              "severity": 4,
+              "message": 5
+          }
+      },
+    },
+    {
+      "type": "shell",
+      "label": "client",
+      "command": "make",
+      "args": ["-f", "client/makefile"],
+      "problemMatcher": {
+          "owner": "cpp",
+          "fileLocation": ["relative", "${workspaceRoot}/client/"],
+          "pattern": {
+              "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+              "file": 1,
+              "line": 2,
+              "column": 3,
+              "severity": 4,
+              "message": 5
+          }
+      },
+    }
+  ]
 }

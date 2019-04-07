@@ -14,14 +14,14 @@ char* out_put;
 const char *builtin_str[] = {
   "cd",
   "help",
-  "exit"
+  // "exit"
 };
 
 // 程序内置命令的函数数组
 int (*builtin_func[]) (char **) = {
   &lsh_cd,
   &lsh_help,
-  &lsh_exit
+  // &lsh_exit
 };
 
 /**
@@ -254,6 +254,6 @@ int lsh_help(char **args) {
 /**
  * exit命令
 */
-int lsh_exit(char **args) {
-  return 0;
-}
+// int lsh_exit(char **args) {
+//   return 0;
+// }
