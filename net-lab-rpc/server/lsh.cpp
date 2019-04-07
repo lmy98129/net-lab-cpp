@@ -184,7 +184,6 @@ int lsh_launch(char **args) {
     close(std_in_pipe[PIPE_WRITE]);
     close(std_out_pipe[PIPE_READ]);
 
-    // free(out_put);
   }
 
   return 1;
