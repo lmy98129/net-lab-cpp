@@ -9,9 +9,9 @@ Computer network curriculum projects (analyzer &amp; rpc) based on cpp
 * net-lab-analyzer: open this project in VS2017 or complie it into *.exe by VS and run.
 * net-lab-rpc: change directory to this project path in terminal:
 
-  1. compile: ``make -f ./server/makefile`` for server and ``make -f ./client/makefile`` for client.
-  2. run: ``./server/main.o`` for server and ``./client/main.o``.
-  3. clean: ``make clean`` in ``server`` or ``client`` folder for clean the output files if you want.
+1. compile: ``make -f ./server/makefile`` for server and ``make -f ./client/makefile`` for client.
+2. run: ``./server/main.o`` for server and ``./client/main.o``.
+3. clean: ``make clean`` in ``server`` or ``client`` folder for clean the output files if you want.
 
 ## Todos
 ### 1. net-lab-analyzer
