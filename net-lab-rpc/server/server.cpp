@@ -193,12 +193,12 @@ int main(int argc, const char *argv[]) {
               printf("\r客户端(%d)> %s", i, recv_msg);
               // TODO: 就在这里调用shell
               char **args;
-              int status = 1;
               // 切分成参数数组
               args = lsh_split_line(recv_msg);
               if (args != NULL) {
                 // 执行命令
-                status = lsh_execute(args);
+                char* out_put = NULL;
+                out_put = lsh_execute(args);
                 if (NULL != out_put) {
                   printf("%s", out_put);
                   send(client_fds[i], out_put, strlen(out_put), 0);

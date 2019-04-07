@@ -8,9 +8,6 @@
 #define PIPE_READ 0
 #define PIPE_WRITE 1
 
-// 输出缓冲区
-char* out_put;
-
 const char *builtin_str[] = {
   "cd",
   "help",
@@ -18,7 +15,7 @@ const char *builtin_str[] = {
 };
 
 // 程序内置命令的函数数组
-int (*builtin_func[]) (char **) = {
+char* (*builtin_func[]) (char **) = {
   &lsh_cd,
   &lsh_help,
   // &lsh_exit
@@ -74,10 +71,10 @@ char **lsh_split_line(char *line) {
 /**
  * 父子进程调度
 */
-int lsh_launch(char **args) {
+char *lsh_launch(char **args) {
   int bufsize = OUT_PUT_BUFSIZE, position = 0;
   // 函数内部分配的内存空间，在函数执行结束后即会被自动销毁，不存在free的说法
-  out_put = (char *)malloc(bufsize * sizeof(char));
+  char* out_put = NULL;
 
   pid_t pid, wpid;
   int status;
@@ -100,7 +97,7 @@ int lsh_launch(char **args) {
   // 分配输入管道
   if (pipe(std_in_pipe) < 0) {
     perror("lsh - 为子进程分配输入管道失败");
-    return 1;
+    return NULL;
   }
 
   // 分配输出管道
@@ -108,7 +105,7 @@ int lsh_launch(char **args) {
     close(std_in_pipe[PIPE_READ]);
     close(std_in_pipe[PIPE_WRITE]);
     perror("lsh - 为子进程分配输出管道失败");
-    return 1;
+    return NULL;
   }
 
   pid = fork();
@@ -153,6 +150,7 @@ int lsh_launch(char **args) {
     perror("lsh");
   } else {
     // 能继续fork，说明是父进程
+    out_put = (char *)malloc(bufsize * sizeof(char));
 
     // 关闭这些父进程用不到的管道
     close(std_in_pipe[PIPE_READ]);
@@ -174,8 +172,11 @@ int lsh_launch(char **args) {
         position += 3;
         sprintf(out_put + strlen(out_put), "%s", chinese);
       } else {
-        sprintf(out_put + strlen(out_put), "%s", &result);
-        position++;
+        // 防止无故生成退格\b，原因未知
+        if (strlen(&result) == 1) {
+          sprintf(out_put + strlen(out_put), "%s", &result);
+          position++;
+        }
       }
 
       if (position >= bufsize) {
@@ -200,16 +201,16 @@ int lsh_launch(char **args) {
 
   }
 
-  return 1;
+  return out_put;
 }
 
 /**
  * 运行命令
 */
-int lsh_execute(char **args) {
+char* lsh_execute(char **args) {
   if (args[0] == NULL) {
     // 输入了一个空的命令
-    return 1;
+    return NULL;
   }
 
   // 查看是否是程序内置的命令
@@ -237,31 +238,37 @@ int lsh_num_builtins() {
 /**
  * cd命令
 */
-int lsh_cd(char **args) {
+char* lsh_cd(char **args) {
+  char* out_put = NULL;
   if (args[1] == NULL) {
-    fprintf(stderr, "lsh: cd命令应当携带一个参数\n");
+    // fprintf(stderr, "lsh: cd命令应当携带一个参数\n");
+    out_put = (char* )malloc(OUT_PUT_BUFSIZE * sizeof(char));
+    sprintf(out_put + strlen(out_put), "%s", "lsh: cd命令应当携带一个参数\n");
   } else {
     if (chdir(args[1]) != 0) {
-      perror("lsh");
+      out_put = (char* )malloc(OUT_PUT_BUFSIZE * sizeof(char));
+      // perror("lsh");
+      sprintf(out_put + strlen(out_put), "lsh - 文件夹跳转出错: %s\n", strerror(errno));
     }
   }
-  return 1;
+  return out_put;
 }
 
 /**
  * help命令
 */
-int lsh_help(char **args) {
-  printf("lsh, 基于brenns10/lsh项目改造\n");
-  printf("用法: 输入lsh <命令> [参数]之后回车即可运行\n");
-  printf("以下是程序内置的命令\n\n");
+char* lsh_help(char **args) {
+  char* out_put = (char* )malloc(OUT_PUT_BUFSIZE * sizeof(char));
+  sprintf(out_put + strlen(out_put), "%s", "lsh, 基于brenns10/lsh项目改造\n");
+  sprintf(out_put + strlen(out_put), "用法: 输入lsh <命令> [参数]之后回车即可运行\n");
+  sprintf(out_put + strlen(out_put), "以下是程序内置的命令\n\n");
 
   for(int i=0; i<lsh_num_builtins(); i++) {
-    printf("  %s\n", builtin_str[i]);
+    sprintf(out_put + strlen(out_put), "  %s\n", builtin_str[i]);
   }
 
-  printf("\n请使用man <命令>获取其他程序的更多信息\n\n");
-  return 1;
+  sprintf(out_put + strlen(out_put), "\n请使用man <命令>获取其他程序的更多信息\n\n");
+  return out_put;
 }
 
 /**
