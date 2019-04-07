@@ -18,5 +18,5 @@ Computer network curriculum projects (analyzer &amp; rpc) based on cpp
 ### 2. net-lab-rpc
 - [x] a simple shell based on C++ with built-in commands like cd, exit, etc.
 - [x] devide the shell into server and client based on socket.
-- [x] 1-n client/server structure.
-- [ ] test the project on real server.
+- [x] 1-n server/client structure.
+- [x] test the project on real server.
