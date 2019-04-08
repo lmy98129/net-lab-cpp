@@ -1,7 +1,7 @@
 # net-lab-cpp
 Computer network curriculum projects (analyzer &amp; rpc) based on cpp
 
-## Requires
+## Requirements
 * net-lab-analyzer requires: Windows 10, Visual Studio 2017, WinPcap 4.1.3, MinGW (installed in C:/MinGW/), WinPcap 4.1.2 Developer's Pack (installed in C:/WpdPack/), etc.
 * net-lab-rpc requires: Unix (macOS/Linux), clang.
 

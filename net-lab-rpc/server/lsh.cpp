@@ -158,6 +158,7 @@ char *lsh_launch(char **args) {
     
     char result;
     char chinese[4];
+    char other[2];
     // 毕竟不知道究竟输出了多少，只好逐个字符读取
     while(read(std_out_pipe[PIPE_READ], &result, 1) == 1) {
 
@@ -170,13 +171,16 @@ char *lsh_launch(char **args) {
         chinese[2] = result;
         chinese[3] = '\0';
         position += 3;
-        sprintf(out_put + strlen(out_put), "%s", chinese);
+        snprintf(out_put + strlen(out_put), bufsize * sizeof(char), "%s", chinese);
+        // sprintf(out_put + strlen(out_put), "%s", chinese);
       } else {
-        // 防止无故生成退格\b，原因未知
-        if (strlen(&result) == 1) {
-          sprintf(out_put + strlen(out_put), "%s", &result);
+        // // 防止无故生成退格\b，原因未知
+        // if (strlen(&result) == 1) {
+          other[0] = result;
+          other[1] = '\0';
+          snprintf(out_put + strlen(out_put), bufsize * sizeof(char), "%s", other);
           position++;
-        }
+        // }
       }
 
       if (position >= bufsize) {
