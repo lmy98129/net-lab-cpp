@@ -267,7 +267,8 @@ char* lsh_help(char **args) {
     sprintf(out_put + strlen(out_put), "  %s\n", builtin_str[i]);
   }
 
-  sprintf(out_put + strlen(out_put), "\n请使用man <命令>获取其他程序的更多信息\n\n");
+  sprintf(out_put + strlen(out_put), " .exit\n");
+  sprintf(out_put + strlen(out_put), "\n请使用man <命令>获取其他程序的更多信息\n");
   return out_put;
 }
 
