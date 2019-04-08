@@ -10,7 +10,7 @@ SRCS=$(wildcard ${DIR}/*.cpp)
 OBJS=$(SRCS:.cpp=.o)
 
 $(TARGET) : $(OBJS)
-	$(CC) $^ -o $@
+	$(CC) $^ -o $@  -lcurses
 
 $(OBJS): %.o : %.cpp
 	$(CC) $(CFLAGS) $< -o $@

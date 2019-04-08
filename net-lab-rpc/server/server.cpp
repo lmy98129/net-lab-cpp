@@ -16,12 +16,25 @@
 #define BUFFER_SIZE 1024  
 // 退出命令
 #define QUIT_CMD ".exit"  
+// 密码
+#define PASSWORD "netto"
+// 密码消息的前缀
+#define PWD_PRE "PASSWD"
+// 密码正确前缀
+#define PWD_SUC "SUC"
+// 密码错误前缀
+#define PWD_ERR "ERR"
 
 // 应用层同时可以处理的连接  
 #define CONCURRENT_MAX 8   
 int client_fds[CONCURRENT_MAX];
 
 int main(int argc, const char *argv[]) {
+  if (argc < 3) {
+    printf("netto: 参数格式 <ip地址> <端口号>\n");
+    exit(EXIT_SUCCESS);
+  }
+
   printf("> ");
   fflush(stdout);
 
@@ -33,9 +46,9 @@ int main(int argc, const char *argv[]) {
   struct sockaddr_in server_addr;
   // IPv4地址族
   server_addr.sin_family = AF_INET;
-  server_addr.sin_port = htons(SERVER_PORT);
+  server_addr.sin_port = htons(atoi(argv[2]));
   // server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  server_addr.sin_addr.s_addr = inet_addr(argv[1]);
   // sin_zero是为了让sockaddr与sockaddr_in两个数据结构保持大小相同而保留的空字节
   bzero(&(server_addr.sin_zero), 8);
 
@@ -121,10 +134,11 @@ int main(int argc, const char *argv[]) {
         fflush(stdout);
         // 先清空发送缓冲区
         bzero(input_msg, BUFFER_SIZE);
+        strcpy(input_msg, "服务器消息: ");
         // 输入要发送给客户端的消息到发送缓冲区
-        fgets(input_msg, BUFFER_SIZE, stdin);
+        fgets(input_msg + strlen(input_msg), BUFFER_SIZE, stdin);
         // 输入“.exit"则退出服务器
-        if (strncmp(input_msg, QUIT_CMD, strlen(QUIT_CMD)) == 0) {
+        if (strncmp(input_msg + strlen("服务器消息: "), QUIT_CMD, strlen(QUIT_CMD)) == 0) {
           printf("\r提示: 退出服务器\n");
           // 释放当前的socket资源
           shutdown(server_sock_fd, SHUT_RDWR);
@@ -149,7 +163,7 @@ int main(int argc, const char *argv[]) {
         socklen_t address_len;
         // accept函数用来与其建立连接
         int client_sock_fd = accept(server_sock_fd, (struct sockaddr *)&client_address, &address_len);
-        printf("\r提示: 新连接的客户端 文件描述符: %d\n", client_sock_fd);
+        printf("\r提示: 请求连接的新客户端 文件描述符: %d\n", client_sock_fd);
         if (client_sock_fd > 0) {
         // 生成文件描述符成功，向文件描述符表中对应位置添加
           int index = -1;
@@ -162,13 +176,14 @@ int main(int argc, const char *argv[]) {
           }
           if (index >= 0) {
             // 文件描述符添加成功
-            printf("\r提示: 新客户端(%d)加入成功 %s:%d\n", index, inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
+            printf("\r提示: 新客户端(%d)建立连接成功 %s:%d, 等待输入密码\n", index, inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
           }
           else {
             // 文件描述符数量达到上限，也即连接数量达到上限
             bzero(input_msg, BUFFER_SIZE);
             strcpy(input_msg, "提示: 服务器加入的客户端数达到最大值，无法加入!\n");
             send(client_sock_fd, input_msg, BUFFER_SIZE, 0);
+            close(client_sock_fd);
             printf("\r提示: 客户端连接数达到最大值，新客户端加入失败 %s:%d\n", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
           }
           printf("\r> ");
@@ -190,19 +205,37 @@ int main(int argc, const char *argv[]) {
                 byte_num = BUFFER_SIZE;
               }
               recv_msg[byte_num] = '\0';
-              printf("\r客户端(%d)> %s", i, recv_msg);
-              // TODO: 就在这里调用shell
-              char **args;
-              // 切分成参数数组
-              args = lsh_split_line(recv_msg);
-              if (args != NULL) {
-                // 执行命令
-                char* out_put = NULL;
-                out_put = lsh_execute(args);
-                if (NULL != out_put) {
-                  printf("%s", out_put);
+              // 首次登录传输的密码
+              if (strncmp(recv_msg, PWD_PRE, strlen(PWD_PRE)) == 0) {
+                if (strcmp(recv_msg + strlen(PWD_PRE), PASSWORD) == 0) {
+                  char out_put[OUT_PUT_BUFSIZE];
+                  sprintf(out_put, "SUC服务器消息：客户端(%d)欢迎登录！\n", i);
+                  printf("\r%s", out_put + strlen(PWD_SUC));
                   send(client_fds[i], out_put, strlen(out_put), 0);
-                  out_put = NULL;
+                } else {
+                  char out_put[OUT_PUT_BUFSIZE];
+                  sprintf(out_put, "ERR服务器消息：客户端(%d)密码错误，请重新登录！\n", i);
+                  printf("\r%s", out_put + strlen(PWD_ERR));
+                  send(client_fds[i], out_put, strlen(out_put), 0);
+                  // 让客户端自己去选择是否关闭连接，这里不提供关闭连接功能
+                }
+              } else {
+                // 不是密码
+                printf("\r客户端(%d)> %s", i, recv_msg);
+                fflush(stdout);
+                // TODO: 就在这里调用shell
+                char **args;
+                // 切分成参数数组
+                args = lsh_split_line(recv_msg);
+                if (args != NULL) {
+                  // 执行命令
+                  char* out_put = NULL;
+                  out_put = lsh_execute(args);
+                  if (NULL != out_put) {
+                    printf("%s", out_put);
+                    send(client_fds[i], out_put, strlen(out_put), 0);
+                    out_put = NULL;
+                  }
                 }
               }
             }

@@ -41,7 +41,7 @@ char **lsh_split_line(char *line) {
   char *token;
 
   if (!tokens) {
-    fprintf(stderr, "lsh: 内存空间分配错误\n");
+    fprintf(stderr, "netto: 内存空间分配错误\n");
     exit(EXIT_FAILURE);
   }
 
@@ -55,7 +55,7 @@ char **lsh_split_line(char *line) {
       bufsize += LSH_TOK_BUFSIZE;
       tokens = (char **)realloc(tokens, bufsize * sizeof(char *));
       if (!tokens) {
-        fprintf(stderr, "lsh: 内存空间分配错误\n");
+        fprintf(stderr, "netto: 内存空间分配错误\n");
         exit(EXIT_FAILURE);
       }   
     }
@@ -172,22 +172,18 @@ char *lsh_launch(char **args) {
         chinese[3] = '\0';
         position += 3;
         snprintf(out_put + strlen(out_put), bufsize * sizeof(char), "%s", chinese);
-        // sprintf(out_put + strlen(out_put), "%s", chinese);
       } else {
-        // // 防止无故生成退格\b，原因未知
-        // if (strlen(&result) == 1) {
-          other[0] = result;
-          other[1] = '\0';
-          snprintf(out_put + strlen(out_put), bufsize * sizeof(char), "%s", other);
-          position++;
-        // }
+        other[0] = result;
+        other[1] = '\0';
+        snprintf(out_put + strlen(out_put), bufsize * sizeof(char), "%s", other);
+        position++;
       }
 
       if (position >= bufsize) {
         bufsize += OUT_PUT_BUFSIZE;
         out_put = (char *)realloc(out_put, bufsize * sizeof(char));
         if (!out_put) {
-          fprintf(stderr, "lsh: 内存空间分配错误\n");
+          fprintf(stderr, "netto: 内存空间分配错误\n");
           exit(EXIT_FAILURE);
         }
       }
@@ -245,14 +241,14 @@ int lsh_num_builtins() {
 char* lsh_cd(char **args) {
   char* out_put = NULL;
   if (args[1] == NULL) {
-    // fprintf(stderr, "lsh: cd命令应当携带一个参数\n");
+    // fprintf(stderr, "netto: cd命令应当携带一个参数\n");
     out_put = (char* )malloc(OUT_PUT_BUFSIZE * sizeof(char));
-    sprintf(out_put + strlen(out_put), "%s", "lsh: cd命令应当携带一个参数\n");
+    sprintf(out_put + strlen(out_put), "%s", "netto: cd命令应当携带一个参数\n");
   } else {
     if (chdir(args[1]) != 0) {
       out_put = (char* )malloc(OUT_PUT_BUFSIZE * sizeof(char));
       // perror("lsh");
-      sprintf(out_put + strlen(out_put), "lsh - 文件夹跳转出错: %s\n", strerror(errno));
+      sprintf(out_put + strlen(out_put), "netto: 文件夹跳转出错: %s\n", strerror(errno));
     }
   }
   return out_put;
@@ -263,8 +259,8 @@ char* lsh_cd(char **args) {
 */
 char* lsh_help(char **args) {
   char* out_put = (char* )malloc(OUT_PUT_BUFSIZE * sizeof(char));
-  sprintf(out_put + strlen(out_put), "%s", "lsh, 基于brenns10/lsh项目改造\n");
-  sprintf(out_put + strlen(out_put), "用法: 输入lsh <命令> [参数]之后回车即可运行\n");
+  sprintf(out_put + strlen(out_put), "\nnetto, 一款基于socket、brenns10/lsh项目的，类telnet远程程序调用\n");
+  sprintf(out_put + strlen(out_put), "命令用法: 输入<命令> [参数]之后回车即可运行\n");
   sprintf(out_put + strlen(out_put), "以下是程序内置的命令\n\n");
 
   for(int i=0; i<lsh_num_builtins(); i++) {

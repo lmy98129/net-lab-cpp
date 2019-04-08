@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
+#include <curses.h>
 
 // 缓冲区大小
 #define BUFFER_SIZE 1024
@@ -12,10 +13,33 @@
 #define SERVER_PORT 11332  
 // 退出命令
 #define QUIT_CMD ".exit"  
+// 密码最大长度
+#define PWD_SIZE 100
+// 密码消息的前缀
+#define PWD_PRE "PASSWD"
+// 密码正确前缀
+#define PWD_SUC "SUC"
+// 密码错误前缀
+#define PWD_ERR "ERR"
 
 int main(int argc, const char *argv[]) {
-  printf("> ");
+  if (argc < 3) {
+    printf("netto: 参数格式 <ip地址> <端口号>\n");
+    exit(EXIT_SUCCESS);
+  }
+
+
+  // 密码输入缓冲区
+  char passwd[PWD_SIZE];
+  bool is_pwd_send = false, is_pwd_correct = false;
+
+  printf("欢迎使用netto客户端\n请输入密码: ");
   fflush(stdout);
+
+  // 隐藏密码输入
+  initscr();
+  scanf("%s", passwd);
+  endwin();
 
   // 接收recv和发送input缓冲区
   char recv_msg[BUFFER_SIZE];
@@ -25,9 +49,9 @@ int main(int argc, const char *argv[]) {
   struct sockaddr_in server_addr;
   // IPv4地址族
   server_addr.sin_family = AF_INET;
-  server_addr.sin_port = htons(SERVER_PORT);
+  server_addr.sin_port = htons(atoi(argv[2]));
+  server_addr.sin_addr.s_addr = inet_addr(argv[1]);
   // server_addr.sin_addr.s_addr = inet_addr("198.181.38.49");
-  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
   // sin_zero是为了让sockaddr与sockaddr_in两个数据结构保持大小相同而保留的空字节
   bzero(&(server_addr.sin_zero), 8);
 
@@ -49,6 +73,16 @@ int main(int argc, const char *argv[]) {
     tv.tv_sec = 20;
     tv.tv_usec = 0;
 
+    // 发送密码
+    bzero(input_msg, BUFFER_SIZE);
+    strcpy(input_msg, PWD_PRE);
+    strcpy(input_msg + strlen(PWD_PRE), passwd);
+    is_pwd_send = true;
+
+    if (send(server_sock_fd, input_msg, strlen(input_msg), 0) == -1) {
+      perror("\r错误: 发送消息出错!");
+    }
+
     while (1) {
       // 将所有位都设为0
       FD_ZERO(&client_fd_set);
@@ -64,17 +98,25 @@ int main(int argc, const char *argv[]) {
       select(server_sock_fd + 1, &client_fd_set, NULL, NULL, &tv);
       // 若文件描述符输入句柄STDIN_FILENO在FD_ISSET检查后正常，则可以对客户端发送消息
       if (FD_ISSET(STDIN_FILENO, &client_fd_set)) {
-        printf("\r> ");
-        fflush(stdout);
-        bzero(input_msg, BUFFER_SIZE);
-        fgets(input_msg, BUFFER_SIZE, stdin);
-        // 输入“.exit"则退出客户端
-        if (strncmp(input_msg, QUIT_CMD, strlen(QUIT_CMD)) == 0) {
-          printf("\r提示: 退出客户端\n");
-          exit(0);
-        }
-        if (send(server_sock_fd, input_msg, strlen(input_msg), 0) == -1) {
-          perror("\r错误: 发送消息出错!");
+        if (is_pwd_send && is_pwd_correct) {
+          printf("\r> ");
+          fflush(stdout);
+          bzero(input_msg, BUFFER_SIZE);
+          fgets(input_msg, BUFFER_SIZE, stdin);
+          // 输入“.exit"则退出客户端
+
+          // 若出现了开头\r的奇怪现象则对此作出处理
+          if (strncmp(input_msg, "\r", strlen("\r")) == 0) {
+            strcpy(input_msg, input_msg + 1);
+          }
+          
+          if (strncmp(input_msg, QUIT_CMD, strlen(QUIT_CMD)) == 0) {
+            printf("\r提示: 退出客户端\n");
+            exit(0);
+          }
+          if (send(server_sock_fd, input_msg, strlen(input_msg), 0) == -1) {
+            perror("\r错误: 发送消息出错!");
+          }
         }
       }
 
@@ -88,7 +130,18 @@ int main(int argc, const char *argv[]) {
             byte_num = BUFFER_SIZE;
           }
           recv_msg[byte_num] = '\0';
-          printf("\r%s", recv_msg);
+          if (strncmp(recv_msg, PWD_SUC, strlen(PWD_SUC)) == 0) {
+            // 密码正确
+            is_pwd_correct = true;
+            printf("\r%s", recv_msg + strlen(PWD_SUC));
+          } else if (strncmp(recv_msg, PWD_ERR, strlen(PWD_ERR)) == 0) {
+            // 密码不正确
+            is_pwd_correct = false;
+            printf("\r%s", recv_msg + strlen(PWD_ERR));
+            exit(EXIT_SUCCESS);
+          } else {
+            printf("\r%s", recv_msg);
+          }
         }
         else if (byte_num < 0) {
           // 接收消息出错
@@ -97,7 +150,7 @@ int main(int argc, const char *argv[]) {
         else {
           // 服务器端退出了
           printf("\r提示: 服务器退出!\n");
-          exit(0);
+          exit(EXIT_SUCCESS);
         }
         printf("\r> ");
         fflush(stdout);
