@@ -272,13 +272,11 @@ char* lsh_help(char **args) {
   return out_put;
 }
 
-/**
- * exit命令
-*/
-// int lsh_exit(char **args) {
-//   return 0;
-// }
 
+/**
+ * 通过第一个字节内容
+ * 判断utf-8字符的长度
+*/
 size_t get_utf8_length(unsigned char byte) {
     size_t length = 0;
     if (byte >= 0xFC) // lenght 6

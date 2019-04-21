@@ -96,24 +96,25 @@ int main(int argc, const char *argv[]) {
 
       // 使用select模型对连接状态进行监控，tv为超时时间设置
       select(server_sock_fd + 1, &client_fd_set, NULL, NULL, &tv);
-      // 若文件描述符输入句柄STDIN_FILENO在FD_ISSET检查后正常，则可以对客户端发送消息
+      // 若文件描述符输入句柄STDIN_FILENO在FD_ISSET检查后正常，则可以让客户端发送消息
       if (FD_ISSET(STDIN_FILENO, &client_fd_set)) {
         if (is_pwd_send && is_pwd_correct) {
           printf("\r> ");
           fflush(stdout);
           bzero(input_msg, BUFFER_SIZE);
           fgets(input_msg, BUFFER_SIZE, stdin);
-          // 输入“.exit"则退出客户端
 
           // 若出现了开头\r的奇怪现象则对此作出处理
           if (strncmp(input_msg, "\r", strlen("\r")) == 0) {
             strcpy(input_msg, input_msg + 1);
           }
           
+          // 输入“.exit"则退出客户端
           if (strncmp(input_msg, QUIT_CMD, strlen(QUIT_CMD)) == 0) {
             printf("\r提示: 退出客户端\n");
             exit(0);
           }
+          
           if (send(server_sock_fd, input_msg, strlen(input_msg), 0) == -1) {
             perror("\r错误: 发送消息出错!");
           }

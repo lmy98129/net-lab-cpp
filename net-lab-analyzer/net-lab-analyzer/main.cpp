@@ -2,6 +2,7 @@
 #include "arp.h"
 #include "tcp.h"
 #include "icmp.h"
+#include <iostream>
 
 // 最大输入长度
 #define MAXLINE 4096
@@ -123,15 +124,18 @@ int recv_handler(char* device, pcap_t** adhandle, char* packet_filter, int id, c
 	bpf_u_int32 *ipaddress = (bpf_u_int32*)malloc(sizeof(bpf_u_int32)),
 		*ipmask = (bpf_u_int32*)malloc(sizeof(bpf_u_int32));
 
+	// 设置过滤器
+	printf("请输入过滤条件字符串：\n");
+	cin.get();
+	cin.get(packet_filter, MAXLINE);
+	printf("%s\n", packet_filter);
+
 	// 初始化当前网卡，准备开始捕获
 	if (init_capture(device, adhandle, ipaddress, ipmask, errbuf) <= 0) {
 		printf("程序结束\n");
 		return 1;
 	}
 
-	// 设置过滤器
-	printf("请输入过滤条件字符串：\n");
-	scanf("%s", packet_filter);
 	if (set_filter(adhandle, packet_filter, ipmask, errbuf) <= 0) {
 		printf("程序结束\n");
 		return 1;

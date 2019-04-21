@@ -63,7 +63,7 @@ int list_device(pcap_if_t** alldevs, char* errbuf) {
 }
 
 /**
-* 获取数据包捕获描述符以查看网络上的数据包相关信息，这里主要查看当前网卡设备信息
+* 获取网卡适配器文件描述符adhandle
 * 65535：最大数据包长度
 * 1：混杂模式，无论目的地是否是当前网卡都进行接收
 * 1000：允许的最大延时（ms）
@@ -93,7 +93,7 @@ int init_capture(char* device, pcap_t** adhandle, bpf_u_int32* ipaddress, bpf_u_
 	char *dev_ip, *dev_mask;
 
 	if (pcap_lookupnet(device, ipaddress, ipmask, errbuf) == -1) {
-		printf("pcap_lookupnet - 获取网卡的网络号和子网掩码出错: %s\n", errbuf);
+		printf("pcap_lookupnet - 初始化网卡捕获出错: %s\n", errbuf);
 		return -2;
 	}
 
@@ -212,7 +212,7 @@ void packet_handler(u_char* arg, const struct pcap_pkthdr* pkt_header, const u_c
 		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "协议类型号: %u\n", arp->ptype);
 		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "MAC地址长度: %u\n", arp->hlen);
 		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "IP地址长度: %u\n", arp->plen);
-		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "操作类型: %u\n", arp->oper);
+		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "操作类型: %u\n", ntohs(arp->oper));
 		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "源MAC地址: %02x-%02x-%02x-%02x-%02x-%02x\n", arp->sha[0], arp->sha[1], arp->sha[2], arp->sha[3], arp->sha[4], arp->sha[5]);
 		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "源IP地址: %d.%d.%d.%d\n", arp->spa[0], arp->spa[1], arp->spa[2], arp->spa[3]);
 		snprintf(data_buffer + strlen(data_buffer), sizeof(char)*MAX_LEN, "目的MAC地址: %02x-%02x-%02x-%02x-%02x-%02x\n", arp->tha[0], arp->tha[1], arp->tha[2], arp->tha[3], arp->tha[4], arp->tha[5]);

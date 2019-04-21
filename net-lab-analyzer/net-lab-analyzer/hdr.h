@@ -69,16 +69,6 @@ typedef struct icmp_hdr {
 	u_short sequence;
 }icmp_hdr;
 
-// TODO: 做成与UI通信的中介结构体
-typedef struct pkt_content {
-	eth_hdr* eth;
-	ip_hdr* ip;
-	tcp_hdr* tcp;
-	udp_hdr* udp;
-	arp_hdr* arp;
-	icmp_hdr* icmp;
-}pkt_content;
-
 typedef struct tcp_psd_hdr{
 	u_char s_ip[4];
 	u_char d_ip[4];
@@ -87,7 +77,7 @@ typedef struct tcp_psd_hdr{
 	u_short plen;
 }tcp_psd_hdr;
 
-// 常用的ARP包长度
+// 常用的包长度
 #define ARP_LEN 60
 #define TCP_LEN 54
 #define ICMP_LEN 52

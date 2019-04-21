@@ -73,7 +73,7 @@ int icmp_sender(char* device, pcap_t** adhandle, u_char* dest_ip, u_char* dest_m
 	// 初始化当前网卡，准备开始捕获
 	/*
 	* 之所以在发送之前就开始初始化捕获和过滤，
-	* 是为了打一个提前量，ARP包收发较快容易在初始化捕获的过程中错过对方的回复
+	* 是为了打一个提前量，数据包收发较快容易在初始化捕获的过程中错过对方的回复
 	*/
 	if (init_capture(device, adhandle, ipaddress, ipmask, errbuf) <= 0) {
 		printf("程序结束\n");
